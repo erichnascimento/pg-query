@@ -1,0 +1,15 @@
+hosts:
+    - # My dev Postgres
+        name: dev.local
+        user: postgres
+        password: postgres
+        host: localhost
+        port: 5432
+        databases: [myapp]
+    - # My Production Postgres
+        name: production
+        user: postgres
+        password: postgres
+        host: myapp.io
+        port: 5432
+        databases: [myapp1,myapp2]
