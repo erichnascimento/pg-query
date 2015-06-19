@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"fmt"
 	"log"
 	"strings"
 	"os"
@@ -13,10 +12,9 @@ import (
 	"github.com/erichnascimento/pg-query/pkg/printer/csv"
 	"github.com/erichnascimento/pg-query/pkg/printer/table"
 	"github.com/erichnascimento/pg-query/pkg/printer"
-	
 )
 
-const VERSION = "0.0.1"
+const VERSION = "0.0.2"
 
 const Usage = `
   Usage:
@@ -25,12 +23,12 @@ const Usage = `
     pg-query -v | --version
 
   Options:
-    -c, --config config    configuration file path
-    -d, --databases db     databases
-    -H, --hosts hosts      hosts to run
-    -F, --format fmt       output format: table | csv
-    -h, --help             output help information
-    -v, --version          output version
+    -c, --config ./config.yml                configuration file path
+    -d, --databases db1,db2,dbN              databases filter
+    -H, --hosts host1,host2,hostN            hosts filter
+    -F, --format (table | csv)               output format: table | csv
+    -h, --help                               output help information
+    -v, --version                            output version
 `
 
 func explodeStr(str string, trim bool) (parts []string) {

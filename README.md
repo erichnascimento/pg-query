@@ -29,7 +29,28 @@ $ pg-query -h
 
 ## Examples
 
-### Run a query over all configured databases in ./examples/config.yml
+### Config file example
+```yaml
+hosts:
+    - # My dev Postgres
+        name: dev.local
+        user: postgres
+        password: postgres
+        host: localhost
+        port: 5432
+        databases: [myapp]
+
+    - # My Production Postgres
+        name: production
+        user: postgres
+        password: postgres
+        host: myapp.io
+        port: 5432
+        databases: [myapp1,myapp2]
+```
+
+### Simple way
+Execute a query over all configured databases in ./config.yml
 ```
 $ pg-query -c config.yml "SELECT NOW()"
 2015/06/18 15:53:32 Connecting to "myapp" (localhost:5432)
@@ -53,6 +74,44 @@ $ pg-query -c config.yml "SELECT NOW()"
 | 2015-06-18 18:53:32.220903 +0000 UTC |
 +--------------------------------------+
 ```
+
+### Filter by host
+Execute a query over all configured databases in ./config.yml that host match with `localhost` or `server`
+```
+$ pg-query -c config.yml -H localhost,server "SELECT NOW()"
+```
+
+
+### Filter by database name
+
+Execute a query over all configured databases in ./config.yml that database name match with `myapp1` or `myapp2`
+
+```
+$ pg-query -c config.yml -d myapp1,myapp2 "SELECT NOW()"
+```
+
+### Filter by host and database name 
+
+Execute a query over all configured databases in ./config.yml that database name match with `myapp` and host match witch `localhost`
+
+```
+$ pg-query -c config.yml -d myapp -H localhost "SELECT NOW()"
+```
+
+### Output format
+
+Show data as table (default)
+
+```
+$ pg-query -c config.yml -F table -H localhost "SELECT NOW()"
+```
+
+Show data as csv
+
+```
+$ pg-query -c config.yml -F csv -H localhost "SELECT NOW()"
+```
+
 
 # License
 
