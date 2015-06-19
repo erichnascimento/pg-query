@@ -10,16 +10,23 @@ import(
 type columnFormater func (interface{}) string
 
 type TablePrinter struct {
+	writer io.Writer
 	*tablewriter.Table
 	columnFormaters []columnFormater
 }
 
 func NewTablePrinter(writer io.Writer) *TablePrinter {
 	printer := new(TablePrinter)
-	printer.Table = tablewriter.NewWriter(writer)
-	printer.Table.SetColWidth(50)
-
+	printer.writer = writer
+	printer.initialize()
 	return printer
+}
+
+func (tp *TablePrinter) initialize() error {
+	tp.Table = tablewriter.NewWriter(tp.writer)
+	tp.Table.SetColWidth(50)
+
+	return nil
 }
 
 func (tp *TablePrinter) SetColumns(columns []string) {
@@ -43,6 +50,7 @@ func (tp *TablePrinter) Print(values []interface{}) {
 
 func (tp *TablePrinter) Close() error {
 	tp.Render()
+	tp.initialize()
 	return nil
 }
 
