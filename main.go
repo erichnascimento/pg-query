@@ -1,30 +1,35 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
-	"strings"
 	"os"
+	"strings"
 
 	"github.com/tj/docopt"
 
-	"github.com/erichnascimento/pg-query/pkg/config"
 	"github.com/erichnascimento/pg-query/pkg/client"
+	"github.com/erichnascimento/pg-query/pkg/config"
+	"github.com/erichnascimento/pg-query/pkg/printer"
 	"github.com/erichnascimento/pg-query/pkg/printer/csv"
 	"github.com/erichnascimento/pg-query/pkg/printer/table"
-	"github.com/erichnascimento/pg-query/pkg/printer"
 )
 
+// Version of program
 const VERSION = "0.0.2"
 
+// Usage description
 const Usage = `
   Usage:
-    pg-query --config <config> [--hosts <hosts>] [--databases <db>] [--format <fmt>] <sql>
+    pg-query [options] --config <config> <sql>
+    pg-query [options] --config <config> --input-file <sql-file>
     pg-query -h | -- help
     pg-query -v | --version
 
   Options:
     -c, --config ./config.yml                configuration file path
     -d, --databases db1,db2,dbN              databases filter
+    -f, --input-file                         SQL file to execute
     -H, --hosts host1,host2,hostN            hosts filter
     -F, --format (table | csv)               output format: table | csv
     -h, --help                               output help information
@@ -60,7 +65,7 @@ func runSQLQuery(sql string, conf *client.Config, rowPrinter printer.RowPrinter)
 
 	// Execute SQL
 	err = db.Query(sql, rowPrinter)
-	if err != nil  {
+	if err != nil {
 		return err
 	}
 
@@ -107,13 +112,30 @@ func main() {
 
 	var rowPrinter printer.RowPrinter
 	switch format {
-		case "csv":
-			rowPrinter = csv.NewCSVPrinter(os.Stdout)
-		default:
-			rowPrinter = table.NewTablePrinter(os.Stdout)
+	case "csv":
+		rowPrinter = csv.NewCSVPrinter(os.Stdout)
+	default:
+		rowPrinter = table.NewTablePrinter(os.Stdout)
 	}
 
-	sql := args["<sql>"].(string)
+	sql := ""
+
+	// SQL String
+	if val := args["<sql>"]; val != nil {
+		sql = val.(string)
+	}
+
+	// SQL from file
+	if val := args["--input-file"]; val != nil {
+		filename := val.(string)
+		fileContent, err := ioutil.ReadFile(filename)
+
+		if err != nil {
+			log.Fatalf("Error on open sql file: %s", err)
+		}
+
+		sql = string(fileContent)
+	}
 
 	// Run SQL
 	for _, h := range conf.Hosts {
@@ -129,4 +151,3 @@ func main() {
 
 	//log.Printf("Bye :)")
 }
-
