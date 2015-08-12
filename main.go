@@ -126,7 +126,7 @@ func main() {
 	}
 
 	// SQL from file
-	if val := args["--input-file"]; val != nil {
+	if val := args["<sql-file>"]; val != nil {
 		filename := val.(string)
 		fileContent, err := ioutil.ReadFile(filename)
 
