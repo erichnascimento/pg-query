@@ -1,11 +1,12 @@
-package	client
+package client
 
 import (
 	//"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	"fmt"
 	"database/sql"
+	"fmt"
 	"log"
+
+	_ "github.com/erichnascimento/pq"
 
 	"github.com/erichnascimento/pg-query/pkg/printer"
 )
@@ -23,7 +24,7 @@ func New(config *Config) (*Client, error) {
 	if true {
 		log.Printf(`Connecting to "%s" (%s:%d)`, config.Database, config.Host, config.Port)
 	}
-	
+
 	err := c.connect()
 	return c, err
 }
@@ -37,7 +38,7 @@ func (c *Client) connect() error {
 	}
 
 	db, err := sql.Open("postgres", connectionStr)
-	if err != nil  {
+	if err != nil {
 		return err
 	}
 	c.DB = db
@@ -69,7 +70,7 @@ func (c *Client) Query(sql string, printer printer.RowPrinter) error {
 	pValues := rowToPointer(values)
 
 	for rows.Next() {
-		
+
 		err := rows.Scan(pValues...)
 		if err != nil {
 			return err
