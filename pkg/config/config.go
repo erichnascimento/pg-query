@@ -1,6 +1,6 @@
 package config
 
-import(
+import (
 	"fmt"
 	"io/ioutil"
 
@@ -8,41 +8,33 @@ import(
 )
 
 type Host struct {
-	Name string
-	User string
-	Password string 
-	Host string
-	Port uint16
+	Name       string
+	User       string
+	Password   string
+	Host       string
+	Port       uint16
 	Connection string
-	Databases []string
+	Databases  []string
 }
 
 func (h *Host) DatabaseExists(name string) bool {
 	for _, dbname := range h.Databases {
-    	if dbname == name {
-    		return true
-    	}
-  	}
+		if dbname == name {
+			return true
+		}
+	}
 
-  	return false
+	return false
 }
 
-func (h *Host) ApplyDatabaseFilter(databases []string) error {
-	if len(databases) == 0 {
-		return nil
-	}
-
-	filteredDbs := make([]string, len(databases))
-	for i, dbname := range databases {
-		if !h.DatabaseExists(dbname) {
-			return fmt.Errorf(`database not found "%s"`, dbname)
+func (h *Host) ApplyDatabaseFilter(databases []string) {
+	filteredDbs := make([]string, 0)
+	for _, dbname := range databases {
+		if h.DatabaseExists(dbname) {
+			filteredDbs = append(filteredDbs, dbname)
 		}
-		filteredDbs[i] = dbname
 	}
-
 	h.Databases = filteredDbs
-
-	return nil
 }
 
 type Config struct {
@@ -57,7 +49,7 @@ func CreateFromFile(filePath string) (error, *Config) {
 
 	// Unmarshal config
 	config := new(Config)
-	
+
 	if err = yaml.Unmarshal(b, config); err != nil {
 		return err, nil
 	}
@@ -67,12 +59,12 @@ func CreateFromFile(filePath string) (error, *Config) {
 
 func (c *Config) GetHostByName(name string) *Host {
 	for _, h := range c.Hosts {
-    	if h.Name == name {
-    		return h
-    	}
-  	}
+		if h.Name == name {
+			return h
+		}
+	}
 
-  	return nil
+	return nil
 }
 
 func (c *Config) ApplyHostFilter(hostNames []string) error {

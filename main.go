@@ -98,9 +98,7 @@ func main() {
 	if dbs := args["--databases"]; dbs != nil {
 		dbsArr := explodeStr(dbs.(string), true)
 		for _, h := range conf.Hosts {
-			if err := h.ApplyDatabaseFilter(dbsArr); err != nil {
-				log.Fatalf("Error on filter dbs: %s", err)
-			}
+			h.ApplyDatabaseFilter(dbsArr)
 		}
 	}
 
