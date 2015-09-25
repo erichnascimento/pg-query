@@ -1,13 +1,14 @@
 package table
 
-import(
+import (
 	"fmt"
 	"io"
 	"strconv"
+
 	"github.com/olekukonko/tablewriter"
 )
 
-type columnFormater func (interface{}) string
+type columnFormater func(interface{}) string
 
 type TablePrinter struct {
 	writer io.Writer
@@ -44,7 +45,7 @@ func (tp *TablePrinter) Print(values []interface{}) {
 		formater := tp.columnFormaters[i]
 		strRow[i] = formater(v)
 	}
-	
+
 	tp.Append(strRow)
 }
 
@@ -61,12 +62,16 @@ func (tp *TablePrinter) createFormaters(row []interface{}) []columnFormater {
 			var formater columnFormater
 			switch v.(type) {
 			case int, int64:
-				formater = func (value interface{}) string {
+				formater = func(value interface{}) string {
 					return strconv.FormatInt(value.(int64), 10)
 				}
 			default:
-				formater = func (value interface{}) string {
-					return fmt.Sprintf("%s",value)
+				formater = func(value interface{}) string {
+					if value == nil {
+						return ""
+					}
+
+					return fmt.Sprintf("%s", value)
 				}
 			}
 

@@ -1,13 +1,13 @@
 package csv
 
-import(
+import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"strconv"
-	"encoding/csv"
 )
 
-type columnFormater func (interface{}) string
+type columnFormater func(interface{}) string
 
 type RowPrinter interface {
 	SetColumns([]string)
@@ -15,7 +15,7 @@ type RowPrinter interface {
 }
 
 type CSVPrinter struct {
-	writer *csv.Writer
+	writer          *csv.Writer
 	columnFormaters []columnFormater
 }
 
@@ -44,7 +44,7 @@ func (tp *CSVPrinter) Print(values []interface{}) {
 		formater := tp.columnFormaters[i]
 		strRow[i] = formater(v)
 	}
-	
+
 	//tp.Append(strRow)
 	//fmt.Printf("%s", strRow)
 	tp.writer.Write(strRow)
@@ -62,12 +62,16 @@ func (tp *CSVPrinter) createFormaters(row []interface{}) []columnFormater {
 			var formater columnFormater
 			switch v.(type) {
 			case int, int64:
-				formater = func (value interface{}) string {
+				formater = func(value interface{}) string {
 					return strconv.FormatInt(value.(int64), 10)
 				}
 			default:
-				formater = func (value interface{}) string {
-					return fmt.Sprintf("%s",value)
+				formater = func(value interface{}) string {
+					if value == nil {
+						return ""
+					}
+
+					return fmt.Sprintf("%s", value)
 				}
 			}
 
