@@ -29,7 +29,7 @@ func NewCSVPrinter(writer io.Writer) *CSVPrinter {
 }
 
 func (tp *CSVPrinter) SetColumns(columns []string) {
-	//tp.Table.SetHeader(columns)
+	tp.writer.Write(columns)
 	return
 }
 
