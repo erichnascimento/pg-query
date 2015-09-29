@@ -63,6 +63,10 @@ func (tp *CSVPrinter) createFormaters(row []interface{}) []columnFormater {
 			switch v.(type) {
 			case int, int64:
 				formater = func(value interface{}) string {
+					if value == nil {
+						return ""
+					}
+
 					return strconv.FormatInt(value.(int64), 10)
 				}
 			default:
