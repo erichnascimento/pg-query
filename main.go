@@ -29,7 +29,7 @@ const Usage = `
   Options:
     -c, --config ./config.yml                configuration file path
     -d, --databases db1,db2,dbN              databases filter
-    -f, --input-file                         SQL file to execute
+    -f, --input-file                         SQL file to execute. For reading from stdin, use "-"
     -H, --hosts host1,host2,hostN            hosts filter
     -F, --format (table | csv)               output format: table | csv
     -h, --help                               output help information
@@ -125,14 +125,21 @@ func main() {
 
 	// SQL from file
 	if val := args["<sql-file>"]; val != nil {
-		filename := val.(string)
-		fileContent, err := ioutil.ReadFile(filename)
-
-		if err != nil {
-			log.Fatalf("Error on open sql file: %s", err)
+		if filename := val.(string); filename == "-" {
+			// Read data from stdin
+			bytes, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				log.Printf("Erron on read sql from stdin: %s", err)
+			}
+			sql = string(bytes)
+		} else {
+			// Read data from file
+			fileContent, err := ioutil.ReadFile(filename)
+			if err != nil {
+				log.Fatalf("Error on open sql file: %s", err)
+			}
+			sql = string(fileContent)
 		}
-
-		sql = string(fileContent)
 	}
 
 	// Run SQL

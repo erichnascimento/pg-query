@@ -12,18 +12,20 @@ $ go get github.com/erichnascimento/pg-query
 ```
 $ pg-query -h
 
-  Usage:
-    pg-query --config <config> [--hosts <hosts>] [--databases <db>] [--format <fmt>] <sql>
-    pg-query -h | -- help
-    pg-query -v | --version
+Usage:
+  pg-query [options] --config <config> <sql>
+  pg-query [options] --config <config> --input-file <sql-file>
+  pg-query -h | -- help
+  pg-query -v | --version
 
-  Options:
-    -c, --config config    configuration file path
-    -d, --databases db     databases to run
-    -H, --hosts hosts      hosts to run
-    -F, --format fmt       output format: table | csv
-    -h, --help             output help information
-    -v, --version          output version
+Options:
+  -c, --config ./config.yml                configuration file path
+  -d, --databases db1,db2,dbN              databases filter
+  -f, --input-file                         SQL file to execute. For reading from stdin, use "-"
+  -H, --hosts host1,host2,hostN            hosts filter
+  -F, --format (table | csv)               output format: table | csv
+  -h, --help                               output help information
+  -v, --version                            output version
 
 ```
 
@@ -90,7 +92,7 @@ Execute a query over all configured databases in ./config.yml that database name
 $ pg-query -c config.yml -d myapp1,myapp2 "SELECT NOW()"
 ```
 
-### Filter by host and database name 
+### Filter by host and database name
 
 Execute a query over all configured databases in ./config.yml that database name match with `myapp` and host match witch `localhost`
 
